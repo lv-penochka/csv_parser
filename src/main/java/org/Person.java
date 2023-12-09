@@ -8,16 +8,16 @@ public class Person {
     private final String name;
     private final String sex;
     private final Date birthday;
-    private final Department department;
+    private final Departments departments;
     private  final  int salary;
 
-    public Person(int personID, String name, String sex, Date date, int salary, Department department) {
+    public Person(int personID, String name, String sex, Date date, int salary, Departments departments) {
         this.personID = personID;
         this.name = name;
         this.sex = sex;
         this.birthday = date;
         this.salary = salary;
-        this.department = department;
+        this.departments = departments;
     }
 
     public int getPersonID() {
@@ -40,6 +40,17 @@ public class Person {
 
     public int getSalary() {
         return salary;
+    }
+    @Override
+    public String toString() {
+        return "Person{" +
+                "personID=" + personID +
+                ", name='" + name + '\'' +
+                ", sex='" + sex + '\'' +
+                ", birthday=" + birthday +
+//                ", department=" + departments.getDepartmentName() + departments.getDepartmentID()+
+                ", salary=" + salary +
+                '}';
     }
 
 

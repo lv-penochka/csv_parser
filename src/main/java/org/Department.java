@@ -1,26 +1,16 @@
 package org;
+
 import java.util.UUID;
 
-public class Department {
-    private final String departmentName;
-    private  final UUID departmentID;
-
-    public Department(String departmentName) {
-        UUID uniqueKey = UUID.randomUUID();
+public class Department extends Departments{
+    private  String departmentName;
+    private  UUID departmentID;
+    public Department(String departmentName, UUID departmentID) {
+        super(departmentName);
         this.departmentName = departmentName;
-        this.departmentID = uniqueKey;
+        this.departmentID = departmentID;
     }
-    public String getDepartmentName() {
-        return departmentName;
-    }
-    public UUID getDepartmentID() {
-        return departmentID;
-    }
-    @Override
-    public String toString() {
-        return "Department{" +
-                "departmentName='" + departmentName + '\'' +
-                ", departmentID=" + departmentID +
-                '}';
+    public Department(String departmentName) {
+        super(departmentName);
     }
 }
