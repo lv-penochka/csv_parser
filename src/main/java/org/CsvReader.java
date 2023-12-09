@@ -3,21 +3,39 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+/**
+ This class provides methods to parse a CSV file containing information about persons and their departments.
+**/
 
 public class CsvReader {
+    /**
+     Parse the CSV file and return a list of Person objects.
+     @param sourcePath the path to the CSV file to be parsed
+     @return a list of Person objects parsed from the CSV file
+     @throws IOException if an I/O error occurs
+     */
     public static List<Person> parsePersons(Path sourcePath) throws IOException {
         PreprocessCSV(sourcePath);
         return GenerateListOfPersons(getProcessedPath(sourcePath));
 
     }
+    /**
+     Get the processed path for the CSV file.
+     @param sourcePath the path to the source CSV file
+     @return the processed path for the CSV file
+     */
     private static Path getProcessedPath(Path sourcePath){
         return Path.of(sourcePath.getParent().toString(),"edited_" + sourcePath.getFileName());
     }
-
+    /**
+     Generate a list of Person objects from the processed CSV file.
+     @param path the path to the processed CSV file
+     @return a list of Person objects parsed from the processed CSV file
+     @throws IOException if an I/O error occurs
+     */
     private static List<Person> GenerateListOfPersons(Path path) throws IOException {
        return Files.lines(path)
                 .skip(1)
@@ -30,10 +48,19 @@ public class CsvReader {
                 })
                 .collect(Collectors.toList());
     }
-
+    /**
+     Preprocess the CSV file by adding department UUIDs to each line.
+     @param sourcePath the path to the source CSV file
+     @throws IOException if an I/O error occurs
+     */
     private static void PreprocessCSV(Path sourcePath) throws IOException {
+        if (! Files.exists(sourcePath)){
+            throw new IOException("File not found");
+        }
+
         HashMap <String,UUID> departmentsWithKeys = new HashMap<>();
         Path outputPath=getProcessedPath(sourcePath);
+
         final AtomicBoolean isFirstLine = new AtomicBoolean(true);
         try (FileWriter writer = new FileWriter(outputPath.toString());
              BufferedWriter bw = new BufferedWriter(writer)) {
@@ -59,23 +86,34 @@ public class CsvReader {
             System.err.format("IOException: %s%n", e);
         }
     }
-
+    /**
+     Get a Person object from a CSV line.
+     @param line the CSV line
+     @return a Person object parsed from the CSV line
+     @throws ParseException if an error occurs during parsing
+     */
     private static Person getPerson(String line) throws ParseException {
         String[] fields = line.split(";");
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
         if(fields.length!=7)
-            throw new RuntimeException("Invalide CSV line : "+ line);
+            throw new RuntimeException("Invalid CSV line : "+ line);
         return new Person(Integer.parseInt(fields[0]),
                                 fields[1],
                                 fields[2],
-                                dateFormatter.parse(fields[3]),
+                                fields[3],
                 Integer.parseInt(fields[5]),
                 new Department(fields[4], UUID.fromString(fields[6])));
     }
+    /**
+     Get the department name from a CSV line.
+     @param line the CSV line
+     @return the department name parsed from the CSV line
+     @throws ParseException if an error occurs during parsing
+     */
     private static String getDepartmentNameFrom(String line) throws ParseException {
         String[] fields = line.split(";");
-        if(fields.length!=6)
-            throw new RuntimeException("Invalide CSV line : "+ line);
+        if(fields.length!=7)
+            throw new RuntimeException("Invalid CSV line : "+ line);
         return fields[4];
     }
+
 }
